@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>한글 검색어 오타 교정</title>
+    <style>
+        :root {
+            color-scheme: light;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            color: #233044;
+            background: #f7faff;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            margin: 0;
+            display: grid;
+            place-items: center;
+            padding: 32px 18px;
+        }
+
+        main {
+            width: min(100%, 680px);
+        }
+
+        .eyebrow {
+            margin: 0 0 10px;
+            color: #6288c7;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: .08em;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: clamp(28px, 6vw, 42px);
+            letter-spacing: -.05em;
+        }
+
+        .description {
+            margin: 12px 0 28px;
+            color: #718096;
+            line-height: 1.7;
+        }
+
+        .search-box, .result-card, .empty-state {
+            border: 1px solid #e6edf7;
+            border-radius: 20px;
+            background: #fff;
+            box-shadow: 0 12px 36px rgba(58, 91, 137, .07);
+        }
+
+        .search-box {
+            display: flex;
+            gap: 10px;
+            padding: 10px;
+        }
+
+        input {
+            min-width: 0;
+            flex: 1;
+            border: 0;
+            outline: 0;
+            padding: 12px;
+            color: inherit;
+            font: inherit;
+        }
+
+        input::placeholder {
+            color: #a4afbf;
+        }
+
+        button {
+            border: 0;
+            border-radius: 12px;
+            background: #78a8ef;
+            color: white;
+            cursor: pointer;
+            font: inherit;
+            font-weight: 700;
+        }
+
+        .submit {
+            padding: 0 22px;
+        }
+
+        button:hover {
+            background: #5d93e4;
+        }
+
+        button:focus-visible, input:focus-visible {
+            outline: 3px solid #c8dcfb;
+            outline-offset: 2px;
+        }
+
+        .examples {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 9px;
+            margin: 15px 2px 0;
+            color: #8a96a8;
+            font-size: 13px;
+        }
+
+        .example {
+            padding: 7px 12px;
+            border: 1px solid #dfeafb;
+            border-radius: 999px;
+            background: #f0f6ff;
+            color: #567db8;
+            font-size: 13px;
+        }
+
+        #result {
+            margin-top: 24px;
+        }
+
+        .empty-state {
+            padding: 36px 20px;
+            color: #8793a4;
+            text-align: center;
+            box-shadow: none;
+        }
+
+        .result-card {
+            padding: 24px;
+        }
+
+        .result-label {
+            margin: 0 0 8px;
+            color: #8793a4;
+            font-size: 13px;
+        }
+
+        .mapped {
+            margin: 0;
+            font-size: 30px;
+            font-weight: 750;
+            letter-spacing: -.04em;
+            overflow-wrap: anywhere;
+        }
+
+        .meta {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin: 12px 0 22px;
+            color: #718096;
+            font-size: 14px;
+        }
+
+        .badge {
+            padding: 5px 9px;
+            border-radius: 999px;
+            background: #eaf3ff;
+            color: #527db9;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        h2 {
+            margin: 0 0 10px;
+            font-size: 15px;
+        }
+
+        .candidate {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 12px 0;
+            border-top: 1px solid #eef2f8;
+        }
+
+        .distance {
+            color: #8190a4;
+            font-size: 13px;
+        }
+
+        .error {
+            color: #b54747;
+        }
+
+        [hidden] {
+            display: none !important;
+        }
+
+        @media (max-width: 480px) {
+            .submit {
+                padding: 0 16px;
+            }
+
+            .result-card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+<main>
+    <p class="eyebrow">HANGUL TYPO FIX</p>
+    <h1>검색어를 똑똑하게 교정해요</h1>
+    <p class="description">두벌식 자판 입력 실수와 한글 자모 오타를 찾아 가까운 단어를 추천합니다.</p>
+
+    <form id="search-form" class="search-box">
+        <input id="query" type="search" placeholder="검색어를 입력해 보세요" autocomplete="off"
+               aria-label="교정할 검색어">
+        <button class="submit" type="submit">교정하기</button>
+    </form>
+    <div class="examples" aria-label="데모 예시">
+        <span>예시로 체험</span>
+        <button class="example" type="button" data-query="dkdlvoem">dkdlvoem</button>
+        <button class="example" type="button" data-query="아잇패드">아잇패드</button>
+    </div>
+
+    <section id="result" aria-live="polite">
+        <div id="empty-state" class="empty-state">검색어를 입력하거나 예시를 눌러 보세요.</div>
+        <div id="result-card" class="result-card" hidden>
+            <p class="result-label">입력한 검색어</p>
+            <p id="mapped" class="mapped"></p>
+            <div class="meta">
+                <span>오타 유형</span>
+                <span id="type" class="badge"></span>
+            </div>
+            <h2>추천 후보</h2>
+            <div id="candidates"></div>
+        </div>
+    </section>
+</main>
+<script>
+    const form = document.querySelector("#search-form");
+    const input = document.querySelector("#query");
+    const emptyState = document.querySelector("#empty-state");
+    const resultCard = document.querySelector("#result-card");
+    const mapped = document.querySelector("#mapped");
+    const type = document.querySelector("#type");
+    const candidates = document.querySelector("#candidates");
+
+    async function correct(query) {
+        emptyState.hidden = false;
+        emptyState.classList.remove("error");
+        emptyState.textContent = "검색어를 교정하고 있어요...";
+        resultCard.hidden = true;
+
+        try {
+            const response = await fetch(`/api/correct?q=${encodeURIComponent(query)}`);
+            if (!response.ok) {
+                throw new Error(response.status === 400 ? "검색어를 입력해 주세요." : "교정에 실패했어요.");
+            }
+            const data = await response.json();
+            mapped.textContent = data.mapped || "가까운 후보가 없어요";
+            type.textContent = data.type === "KEYBOARD" ? "자판 오타" : "한글 오타";
+            candidates.replaceChildren();
+            if (data.candidates.length === 0) {
+                const empty = document.createElement("p");
+                empty.className = "distance";
+                empty.textContent = "가까운 후보가 없어요.";
+                candidates.append(empty);
+            } else {
+                for (const candidate of data.candidates) {
+                    const row = document.createElement("div");
+                    row.className = "candidate";
+                    const word = document.createElement("strong");
+                    word.textContent = candidate.word;
+                    const distance = document.createElement("span");
+                    distance.className = "distance";
+                    distance.textContent = `거리 ${candidate.distance}`;
+                    row.append(word, distance);
+                    candidates.append(row);
+                }
+            }
+            emptyState.hidden = true;
+            resultCard.hidden = false;
+        } catch (error) {
+            emptyState.textContent = error.message;
+            emptyState.classList.add("error");
+        }
+    }
+
+    form.addEventListener("submit", event => {
+        event.preventDefault();
+        if (input.value.trim()) {
+            correct(input.value);
+        } else {
+            input.focus();
+            emptyState.hidden = false;
+            emptyState.classList.add("error");
+            emptyState.textContent = "검색어를 입력해 주세요.";
+        }
+    });
+
+    document.querySelectorAll(".example").forEach(button => {
+        button.addEventListener("click", () => {
+            input.value = button.dataset.query;
+            correct(input.value);
+        });
+    });
+</script>
+</body>
+</html>
