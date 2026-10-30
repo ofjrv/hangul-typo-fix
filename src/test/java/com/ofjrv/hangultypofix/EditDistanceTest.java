@@ -18,7 +18,7 @@ class EditDistanceTest {
 
     @Test
     void measuresInsertionsDeletionsAndSubstitutions() {
-        assertEquals(3, editDistance.distance("ㄱㅏㅁ", "ㄴㅏ"));
+        assertEquals(2, editDistance.distance("ㄱㅏㅁ", "ㄴㅏ"));
         assertEquals(0, editDistance.distance("", ""));
     }
 }

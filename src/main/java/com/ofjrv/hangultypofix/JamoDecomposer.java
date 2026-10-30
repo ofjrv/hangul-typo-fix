@@ -1,6 +1,9 @@
 package com.ofjrv.hangultypofix;
 
+import org.springframework.stereotype.Component;
+
 // 한글 음절을 초성, 중성, 종성으로 풀어.
+@Component
 public class JamoDecomposer {
     private static final char[] INITIALS = {
             'ㄱ', 'ㄲ', 'ㄴ', 'ㄷ', 'ㄸ', 'ㄹ', 'ㅁ', 'ㅂ', 'ㅃ', 'ㅅ',

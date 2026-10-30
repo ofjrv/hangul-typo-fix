@@ -2,7 +2,10 @@ package com.ofjrv.hangultypofix;
 
 import java.util.Map;
 
+import org.springframework.stereotype.Component;
+
 // 두벌식 자판 입력을 한글로 조합해.
+@Component
 public class KeyMapper {
     private static final Map<Character, Character> KEY_MAP = Map.ofEntries(
             Map.entry('r', 'ㄱ'), Map.entry('R', 'ㄲ'), Map.entry('s', 'ㄴ'),
@@ -17,11 +20,11 @@ public class KeyMapper {
             Map.entry('h', 'ㅗ'), Map.entry('y', 'ㅛ'), Map.entry('n', 'ㅜ'),
             Map.entry('b', 'ㅠ'), Map.entry('m', 'ㅡ'), Map.entry('l', 'ㅣ')
     );
-    private static final Map<String, Character> VOWEL_COMBINATIONS = Map.of(
-            "ㅗㅏ", 'ㅘ', "ㅗㅐ", 'ㅙ', "ㅗㅣ", 'ㅚ',
-            "ㅜㅓ", 'ㅝ', "ㅜㅔ", 'ㅞ', "ㅜㅣ", 'ㅟ',
-            "ㅡㅣ", 'ㅢ', "ㅏㅣ", 'ㅐ', "ㅓㅣ", 'ㅔ',
-            "ㅑㅣ", 'ㅒ', "ㅕㅣ", 'ㅖ'
+    private static final Map<String, Character> VOWEL_COMBINATIONS = Map.ofEntries(
+            Map.entry("ㅗㅏ", 'ㅘ'), Map.entry("ㅗㅐ", 'ㅙ'), Map.entry("ㅗㅣ", 'ㅚ'),
+            Map.entry("ㅜㅓ", 'ㅝ'), Map.entry("ㅜㅔ", 'ㅞ'), Map.entry("ㅜㅣ", 'ㅟ'),
+            Map.entry("ㅡㅣ", 'ㅢ'), Map.entry("ㅏㅣ", 'ㅐ'), Map.entry("ㅓㅣ", 'ㅔ'),
+            Map.entry("ㅑㅣ", 'ㅒ'), Map.entry("ㅕㅣ", 'ㅖ')
     );
     private static final Map<String, Character> FINAL_COMBINATIONS = Map.ofEntries(
             Map.entry("ㄱㅅ", 'ㄳ'), Map.entry("ㄴㅈ", 'ㄵ'), Map.entry("ㄴㅎ", 'ㄶ'),

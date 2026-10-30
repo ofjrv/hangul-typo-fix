@@ -1,6 +1,9 @@
 package com.ofjrv.hangultypofix;
 
+import org.springframework.stereotype.Component;
+
 // 두 자모 문자열의 편집 거리를 계산해.
+@Component
 public class EditDistance {
     public int distance(String left, String right) {
         int[] leftChars = left.codePoints().toArray();
